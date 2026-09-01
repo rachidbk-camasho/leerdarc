@@ -46,7 +46,8 @@ workflows:
 
       - name: Flutter analyze
         script: flutter analyze || true
-
+      - name: Set up code signing settings on Xcode project 
+        script: xcode-project use-profiles
       - name: Build ipa for App Store
         script: |
           flutter build ipa --release \
