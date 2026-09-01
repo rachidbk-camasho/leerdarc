@@ -1,0 +1,90 @@
+workflows:
+  ios-app-store:
+    name: Leer Darija - iOS App Store
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    integrations:
+      # Create this under Codemagic > Teams > Integrations > App Store
+      # Connect (name it exactly "codemagic_asc_api_key", or update this
+      # value to match whatever name you choose). See README.md.
+      app_store_connect: codemagic_asc_api_key
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        # Must match the Bundle ID you register in App Store Connect.
+        bundle_identifier: com.leerdarija.app
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
+    scripts:
+      - name: Bootstrap native iOS/Android project files
+        script: |
+          # This repo only ships Dart/Flutter source. The native Xcode and
+          # Gradle projects are generated fresh on every build, so they can
+          # never go stale and there's nothing platform-specific to commit.
+          # --project-name "app" + --org "com.leerdarija" produces the
+          # bundle id com.leerdarija.app, matching ios_signing above.
+          if [ ! -d "ios" ]; then
+            flutter create --platforms=ios,android \
+              --org com.leerdarija \
+              --project-name app .
+          fi
+
+      - name: Get Flutter packages
+        script: flutter packages pub get
+
+      - name: Install CocoaPods dependencies
+        script: |
+          find . -name "Podfile" -maxdepth 2 -execdir pod install \;
+
+      - name: Flutter analyze
+        script: flutter analyze || true
+
+      - name: Build ipa for App Store
+        script: |
+          flutter build ipa --release \
+            --build-name=1.0.0 \
+            --build-number=$CM_BUILD_NUMBER
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - "/tmp/xcodebuild_logs/*.log"
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        # Flip to true once you're ready to send a build for App Store review.
+        submit_to_app_store: false
+      email:
+        recipients:
+          - your-email@example.com
+        notify:
+          success: true
+          failure: true
+
+  android-internal:
+    name: Leer Darija - Android (optional)
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+    scripts:
+      - name: Bootstrap native project files
+        script: |
+          if [ ! -d "android" ]; then
+            flutter create --platforms=android --org com.leerdarija --project-name app .
+          fi
+      - name: Get Flutter packages
+        script: flutter packages pub get
+      - name: Flutter analyze
+        script: flutter analyze || true
+      - name: Build APK
+        script: flutter build apk --release
+    artifacts:
+      - build/**/outputs/**/*.apk
