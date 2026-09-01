@@ -1,7 +1,7 @@
 name: leer_darija
 description: "Leer Darija - Leer Marokkaans Darija op jouw tempo."
 publish_to: 'none'
-version: 1.0.0+1
+version: 3.0.0+13
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
