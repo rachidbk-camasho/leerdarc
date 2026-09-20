@@ -124,3 +124,18 @@ Darija is normally written in Latin letters using numbers to represent
 Arabic sounds that don't exist in Dutch/English (e.g. `3` for ع, `7` for ح,
 `9` for ق). This app uses that convention alongside Arabic script, since
 that's how Darija is actually typed and read day-to-day.
+
+## Content v2 (A1/A2 expansion)
+
+This build loads its learning content from `assets/data/content.json` instead of hardcoding all cards in Dart.
+
+- 2,000 unique vocabulary/phrase cards
+- 40 lessons: Basis (8), A1 (16), A2 (16)
+- 160 dialogues
+- 400 lesson exercises
+- Dutch + Darija Latin transliteration + Arabic script
+- Male/female pronunciation buttons through `flutter_tts` (`ar-MA` when available)
+- Every card contains `audioMale` and `audioFemale` asset path metadata so recorded MP3s can replace TTS later without changing the data model
+
+### Human-recorded audio
+The JSON already points to `audio/male/<card-id>.mp3` and `audio/female/<card-id>.mp3`. Those files are intentionally not bundled yet. The current UI uses TTS. For production-quality Moroccan Darija, record native speakers and either add an asset-player implementation or map the paths to hosted audio URLs.

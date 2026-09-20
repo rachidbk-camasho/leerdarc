@@ -1,7 +1,7 @@
 name: leer_darija
 description: "Leer Darija - Leer Marokkaans Darija op jouw tempo."
 publish_to: 'none'
-version: 3.0.0+13
+version: 1.0.0+1
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -13,6 +13,7 @@ dependencies:
   google_fonts: ^6.2.1
   shared_preferences: ^2.3.2
   provider: ^6.1.2
+  flutter_tts: ^4.2.3
 
 dev_dependencies:
   flutter_test:
@@ -23,6 +24,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/data/content.json
     - assets/icon/icon.png
 
 flutter_launcher_icons:
